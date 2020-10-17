@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.1267
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonsterTradingCardGame", "MonsterTradingCardGame\MonsterTradingCardGame.csproj", "{BC0FB129-8ED0-40A1-98ED-D231933B0D41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonsterTradingCardGame", "MonsterTradingCardGame\MonsterTradingCardGame.csproj", "{BC0FB129-8ED0-40A1-98ED-D231933B0D41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonsterTradingCardGame.Test", "MonsterTradingCardGame.Test\MonsterTradingCardGame.Test.csproj", "{73F21E5C-5A11-4714-8A8D-7266FB7CCA4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{BC0FB129-8ED0-40A1-98ED-D231933B0D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC0FB129-8ED0-40A1-98ED-D231933B0D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC0FB129-8ED0-40A1-98ED-D231933B0D41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73F21E5C-5A11-4714-8A8D-7266FB7CCA4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73F21E5C-5A11-4714-8A8D-7266FB7CCA4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73F21E5C-5A11-4714-8A8D-7266FB7CCA4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73F21E5C-5A11-4714-8A8D-7266FB7CCA4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
