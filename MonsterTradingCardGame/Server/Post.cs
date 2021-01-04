@@ -35,7 +35,7 @@ namespace MonsterTradingCardGame.Server
 
         public void HandlePostUsersMessage()
         {
-            TUser newUser = ConvertJsonUserContent();
+            CUser newUser = ConvertJsonUserContent();
 
             var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
             var con = new NpgsqlConnection(cs);
@@ -43,30 +43,23 @@ namespace MonsterTradingCardGame.Server
 
             //If user already exists in DB exit methode
             if (CompareDbEntries(con, "SELECT username FROM users", newUser.Username) )
+            {
+                RespCode = Response.conflictCode;
+                Resp = $"User {newUser.Username} already exists!";
+                Console.WriteLine(Resp);
                 return;
-
+            }
+            
             newUser.AddToDb(con);
 
-            RespCode = "200";
-            Resp = "Okay";
+            RespCode = Response.okCode;
+            Resp = $"User {newUser.Username} successfully registered!";
             return;
-        }
-
-        private bool CompareDbEntries(NpgsqlConnection con, string sql, string cmp)
-        {
-            using (var cmd = new NpgsqlCommand(sql, con))
-                using (NpgsqlDataReader rdr = cmd.ExecuteReader())
-                    while (rdr.Read())
-                    {
-                        if (rdr.GetString(0) == cmp)
-                            return true;
-                    }
-            return false;
         }
 
         public void HandlePostSessionsMessage()
         {
-            TUser loginUser = ConvertJsonUserContent();
+            CUser loginUser = ConvertJsonUserContent();
 
             var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
             var con = new NpgsqlConnection(cs);
@@ -74,22 +67,48 @@ namespace MonsterTradingCardGame.Server
 
             //If User is not found in DB check, exit methode
             if (!CompareDbEntries(con, "SELECT username FROM users", loginUser.Username))
-                return;
-        }
-
-        private TUser ConvertJsonUserContent()
-        {
-            TUser tmp_res = new TUser();
-
-            if ( ContentType == "application/json\r")
             {
-                tmp_res = JsonConvert.DeserializeObject<TUser>(Content);
-
-                Console.WriteLine(tmp_res.Username);
-                Console.WriteLine(tmp_res.Password);
+                RespCode = Response.conflictCode;
+                Resp = $"User {loginUser.Username} not found!";
+                Console.WriteLine(Resp);
+                return;
             }
 
-            Console.WriteLine(Content);
+            if ( loginUser.setActive(con) == 1 )
+            {
+                RespCode = Response.okCode;
+                Resp = $"User {loginUser.Username} logged in successfully!";
+            }
+            else
+            {
+                RespCode = Response.conflictCode;
+                Resp = "Username and/or Password is incorrect!";
+            }
+            Console.WriteLine(Resp);
+            return;
+        }
+
+        private bool CompareDbEntries(NpgsqlConnection con, string sql, string cmp)
+        {
+            using (var cmd = new NpgsqlCommand(sql, con))
+            using (NpgsqlDataReader rdr = cmd.ExecuteReader())
+            {
+                Console.WriteLine("QUERY: " + sql);
+                while (rdr.Read())
+                {
+                    if (rdr.GetString(0) == cmp)
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        private CUser ConvertJsonUserContent()
+        {
+            CUser tmp_res = new CUser();
+
+            if ( ContentType == "application/json\r")
+                tmp_res = JsonConvert.DeserializeObject<CUser>(Content);
 
             return tmp_res;
         }

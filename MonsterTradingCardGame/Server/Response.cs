@@ -15,7 +15,9 @@ namespace MonsterTradingCardGame.Server
         public byte[] data { get; }
 
         public const string okCode = "201 Message created";
-        public const string badRequestCode = "404 Message not found";
+
+        public const string notFoundCode = "404 Message not found";
+        public const string conflictCode = "409 Conflict";
 
 
         private Response(string status, string version, string mime, byte[] data)
@@ -33,26 +35,7 @@ namespace MonsterTradingCardGame.Server
 
             string[] verbTokens = request.Resource.Split("/");
             string strResponse = "ERROR: CRUD Resource not correct";
-            string strResponseCode = badRequestCode;
-            
-            // -------------------------
-            // TEST for Postgres connection
-
-            /*var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
-            var con = new NpgsqlConnection(cs);
-            con.Open();
-
-            var sql = "INSERT INTO users(username, password) VALUES(@username, @password)";
-            var cmd = new NpgsqlCommand(sql, con);
-
-            cmd.Parameters.AddWithValue("username", result.Username);
-            cmd.Parameters.AddWithValue("password", result.Password);
-            cmd.Prepare();
-            
-            cmd.ExecuteNonQuery();
-            Console.WriteLine("row inserted");*/
-
-            // -------------------------
+            string strResponseCode = notFoundCode;
 
             if (verbTokens.Length < 1 || (verbTokens.Length == 1 && verbTokens[0] == ""))
                 return MakeBadRequest();
@@ -62,7 +45,7 @@ namespace MonsterTradingCardGame.Server
 
             if (request.Verb == "POST")
             {
-                Console.WriteLine("POST: " + string.Join(" ", verbTokens));
+                //Console.WriteLine("POST: " + string.Join(" ", verbTokens));
 
                 Post p = new Post(request.Content, request.HeaderValues);
                 if (CheckTokens(verbTokens, 1, "users")) //verbTokens.Length == 1 && verbTokens[0] == "users"

@@ -60,7 +60,7 @@ namespace MonsterTradingCardGame.Server
                 msg += (char)reader.Read();
             }
 
-            Console.WriteLine("Request: \n" + msg);
+            //Console.WriteLine("Request: \n" + msg);
 
             Request req = Request.GetRequest(msg);
             
