@@ -1,6 +1,7 @@
 ﻿using System;
 using MonsterTradingCardGame.Card;
 using MonsterTradingCardGame.Player;
+using MonsterTradingCardGame.Server;
 
 namespace MonsterTradingCardGame
 {
@@ -12,7 +13,8 @@ namespace MonsterTradingCardGame
              * create Player
              * show and select player options.
              */
-            Console.WriteLine("Hello World!");
+
+            /*Console.WriteLine("Hello World!");
 
             Monster Test = new Monster();
             Console.WriteLine(Test.Lost(1));
@@ -35,7 +37,11 @@ namespace MonsterTradingCardGame
                     return;
                 }
                 Console.Clear();
-            }
+            }*/
+
+            Console.WriteLine("Started server at port 10001");
+            HTTPServer server = new HTTPServer(10001);
+            server.Start();
         }
     }
 }

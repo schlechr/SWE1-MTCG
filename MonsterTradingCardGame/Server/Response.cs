@@ -1,0 +1,111 @@
+﻿using Newtonsoft.Json;
+using System;
+using System.Linq;
+using System.Net.Sockets;
+using Npgsql;
+using MonsterTradingCardGame.User;
+
+namespace MonsterTradingCardGame.Server
+{
+    public class Response
+    {
+        public string status { get; }
+        public string version { get; }
+        public string mime { get; }
+        public byte[] data { get; }
+
+        public const string okCode = "201 Message created";
+        public const string badRequestCode = "404 Message not found";
+
+
+        private Response(string status, string version, string mime, byte[] data)
+        {
+            this.status = status;
+            this.version = version;
+            this.mime = mime;
+            this.data = data;
+        }
+
+        public static Response From(Request request)
+        {
+            if (request == null)
+                return MakeBadRequest();
+
+            string[] verbTokens = request.Resource.Split("/");
+            string strResponse = "ERROR: CRUD Resource not correct";
+            string strResponseCode = badRequestCode;
+            
+            // -------------------------
+            // TEST for Postgres connection
+
+            /*var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
+            var con = new NpgsqlConnection(cs);
+            con.Open();
+
+            var sql = "INSERT INTO users(username, password) VALUES(@username, @password)";
+            var cmd = new NpgsqlCommand(sql, con);
+
+            cmd.Parameters.AddWithValue("username", result.Username);
+            cmd.Parameters.AddWithValue("password", result.Password);
+            cmd.Prepare();
+            
+            cmd.ExecuteNonQuery();
+            Console.WriteLine("row inserted");*/
+
+            // -------------------------
+
+            if (verbTokens.Length < 1 || (verbTokens.Length == 1 && verbTokens[0] == ""))
+                return MakeBadRequest();
+            else if (verbTokens[0] == "")
+                verbTokens = verbTokens.Where(val => val != "").ToArray();
+
+
+            if (request.Verb == "POST")
+            {
+                Console.WriteLine("POST: " + string.Join(" ", verbTokens));
+
+                Post p = new Post(request.Content, request.HeaderValues);
+                if (CheckTokens(verbTokens, 1, "users")) //verbTokens.Length == 1 && verbTokens[0] == "users"
+                    p.HandlePostUsersMessage();
+                else if (CheckTokens(verbTokens, 1, "sessions"))
+                    p.HandlePostSessionsMessage();
+
+                if( p.RespCode != "")
+                {
+                    strResponseCode = p.RespCode;
+                    strResponse = p.Resp;
+                }
+            }
+
+            return new Response(strResponseCode, request.Version, "text/plain", StringToByteArray(strResponse));
+        }
+
+        private static bool CheckTokens(string[] tokens, int length, string key)
+        {
+            if (tokens.Length == length && tokens[0] == key)
+                return true;
+            return false;
+        }
+
+        private static Response MakeBadRequest()
+        {
+            return new Response("400 Bad Request", "", "text/plain", new byte[0]);
+        }
+
+        public static byte[] StringToByteArray(string str)
+        {
+            System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+            return enc.GetBytes(str); // curl request shows "(52) Empty reply from server" // only when string has < 6 chars
+        }
+
+        public void Post(NetworkStream stream)
+        {
+            /*StreamWriter writer = new StreamWriter(stream);
+            
+            writer.WriteLine(String.Format("{0} {1}\r\nServer: {2}\r\nContent-Type: {3}\r\nAccept-Ranges: bytes\r\nContent-Length: {4}\r\n",
+                version, status, HTTPServer.NAME, mime, data.Length));*/
+            stream.Write(data, 0, data.Length);
+        }
+
+    }
+}
