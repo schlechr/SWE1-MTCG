@@ -47,7 +47,9 @@ namespace MonsterTradingCardGame.Server
             string val = "";
             for (int i = 3; i < tokens.Length; i++)
             {
-                if (tokens[i].EndsWith(":"))
+                if (key == "Content")
+                    val += tokens[i] + " ";
+                else if (tokens[i].EndsWith(":"))
                 {
                     if (val != "")
                     {
@@ -61,7 +63,7 @@ namespace MonsterTradingCardGame.Server
                 else if (tokens[i] == "\r")
                 {
                     rv.Add(key, val.Remove(val.Length - 1));
-                    key = "";
+                    key = "Content";
                     val = "";
                 }
                 else

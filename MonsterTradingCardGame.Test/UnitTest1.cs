@@ -14,8 +14,6 @@ namespace Tests
         [Test]
         public void Test1()
         {
-            Monster i = new Monster();
-            Assert.AreEqual( i.Lost(0), "Zero");
         }
     }
 }

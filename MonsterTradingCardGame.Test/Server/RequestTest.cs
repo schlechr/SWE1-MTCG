@@ -4,7 +4,7 @@ using NUnit.Framework;
 using System.Text.RegularExpressions;
 using System.Linq;
 
-namespace SWE_RestServer.Test
+namespace MonsterTradingCardGame.Server.Test
 {
     public class RequestTest
     {

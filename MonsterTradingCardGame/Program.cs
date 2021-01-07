@@ -39,6 +39,7 @@ namespace MonsterTradingCardGame
                 Console.Clear();
             }*/
 
+
             Console.WriteLine("Started server at port 10001");
             HTTPServer server = new HTTPServer(10001);
             server.Start();

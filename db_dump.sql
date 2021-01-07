@@ -5,7 +5,7 @@
 -- Dumped from database version 13.1
 -- Dumped by pg_dump version 13.1
 
--- Started on 2021-01-04 19:42:12
+-- Started on 2021-01-08 00:23:00
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -23,7 +23,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 202 (class 1259 OID 16406)
+-- TOC entry 200 (class 1259 OID 16406)
 -- Name: cards; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -32,16 +32,17 @@ CREATE TABLE public.cards (
     name character varying(50) NOT NULL,
     damage double precision NOT NULL,
     cat_id integer NOT NULL,
-    user_id integer,
+    username character varying(50),
     package_id integer NOT NULL,
-    element_id integer NOT NULL
+    element_id integer NOT NULL,
+    mt_id integer
 );
 
 
 ALTER TABLE public.cards OWNER TO postgres;
 
 --
--- TOC entry 203 (class 1259 OID 16414)
+-- TOC entry 201 (class 1259 OID 16414)
 -- Name: categories; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -54,7 +55,7 @@ CREATE TABLE public.categories (
 ALTER TABLE public.categories OWNER TO postgres;
 
 --
--- TOC entry 205 (class 1259 OID 16444)
+-- TOC entry 203 (class 1259 OID 16444)
 -- Name: elements; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -68,7 +69,7 @@ CREATE TABLE public.elements (
 ALTER TABLE public.elements OWNER TO postgres;
 
 --
--- TOC entry 204 (class 1259 OID 16442)
+-- TOC entry 202 (class 1259 OID 16442)
 -- Name: elements_element_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -84,8 +85,8 @@ CREATE SEQUENCE public.elements_element_id_seq
 ALTER TABLE public.elements_element_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3022 (class 0 OID 0)
--- Dependencies: 204
+-- TOC entry 3024 (class 0 OID 0)
+-- Dependencies: 202
 -- Name: elements_element_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -93,12 +94,24 @@ ALTER SEQUENCE public.elements_element_id_seq OWNED BY public.elements.element_i
 
 
 --
--- TOC entry 201 (class 1259 OID 16398)
+-- TOC entry 204 (class 1259 OID 16467)
+-- Name: monstertypes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.monstertypes (
+    mt_id integer NOT NULL,
+    name character varying(50)
+);
+
+
+ALTER TABLE public.monstertypes OWNER TO postgres;
+
+--
+-- TOC entry 205 (class 1259 OID 16481)
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.users (
-    user_id integer NOT NULL,
     username character varying(50) NOT NULL,
     password character varying(50) NOT NULL,
     coins integer,
@@ -109,32 +122,7 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO postgres;
 
 --
--- TOC entry 200 (class 1259 OID 16396)
--- Name: user_data_user_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.user_data_user_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.user_data_user_id_seq OWNER TO postgres;
-
---
--- TOC entry 3023 (class 0 OID 0)
--- Dependencies: 200
--- Name: user_data_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.user_data_user_id_seq OWNED BY public.users.user_id;
-
-
---
--- TOC entry 2865 (class 2604 OID 16447)
+-- TOC entry 2866 (class 2604 OID 16447)
 -- Name: elements element_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -142,26 +130,63 @@ ALTER TABLE ONLY public.elements ALTER COLUMN element_id SET DEFAULT nextval('pu
 
 
 --
--- TOC entry 2864 (class 2604 OID 16401)
--- Name: users user_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.users ALTER COLUMN user_id SET DEFAULT nextval('public.user_data_user_id_seq'::regclass);
-
-
---
 -- TOC entry 3013 (class 0 OID 16406)
--- Dependencies: 202
+-- Dependencies: 200
 -- Data for Name: cards; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.cards (card_id, name, damage, cat_id, user_id, package_id, element_id) FROM stdin;
+COPY public.cards (card_id, name, damage, cat_id, username, package_id, element_id, mt_id) FROM stdin;
+644808c2-f87a-4600-b313-122b02322fd5	WaterGoblin	9	1	kienboec	2	2	2
+4a2757d6-b1c3-47ac-b9a3-91deab093531	Dragon	55	1	kienboec	2	1	3
+91a6471b-1426-43f6-ad65-6fc473e16f9f	WaterSpell	21	2	kienboec	2	2	1
+4ec8b269-0dfa-4f97-809a-2c63fe2a0025	Ork	55	1	kienboec	2	1	5
+f8043c23-1534-4487-b66b-238e0c3c39b5	WaterSpell	23	2	kienboec	2	2	1
+845f0dc7-37d0-426e-994e-43fc3ac83c08	WaterGoblin	10	1	kienboec	1	2	2
+99f8f8dc-e25e-4a95-aa2c-782823f36e2a	Dragon	50	1	kienboec	1	1	3
+e85e3976-7c86-4d06-9a80-641c2019a79f	WaterSpell	20	2	kienboec	1	2	1
+1cb6ab86-bdb2-47e5-b6e4-68c5ab389334	Ork	45	1	kienboec	1	1	5
+dfdd758f-649c-40f9-ba3a-8657f4b3439f	FireSpell	25	2	kienboec	1	3	1
+b2237eca-0271-43bd-87f6-b22f70d42ca4	WaterGoblin	11	1	kienboec	6	2	2
+9e8238a4-8a7a-487f-9f7d-a8c97899eb48	Dragon	70	1	kienboec	6	1	3
+d60e23cf-2238-4d49-844f-c7589ee5342e	WaterSpell	22	2	kienboec	6	2	1
+fc305a7a-36f7-4d30-ad27-462ca0445649	Ork	40	1	kienboec	6	1	5
+84d276ee-21ec-4171-a509-c1b88162831c	RegularSpell	28	2	kienboec	6	1	1
+d7d0cb94-2cbf-4f97-8ccf-9933dc5354b8	WaterGoblin	9	1	kienboec	5	2	2
+44c82fbc-ef6d-44ab-8c7a-9fb19a0e7c6e	Dragon	55	1	kienboec	5	1	3
+2c98cd06-518b-464c-b911-8d787216cddd	WaterSpell	21	2	kienboec	5	2	1
+951e886a-0fbf-425d-8df5-af2ee4830d85	Ork	55	1	kienboec	5	1	5
+dcd93250-25a7-4dca-85da-cad2789f7198	FireSpell	23	2	kienboec	5	3	1
+ed1dc1bc-f0aa-4a0c-8d43-1402189b33c8	WaterGoblin	10	1	altenhof	4	2	2
+65ff5f23-1e70-4b79-b3bd-f6eb679dd3b5	Dragon	50	1	altenhof	4	1	3
+55ef46c4-016c-4168-bc43-6b9b1e86414f	WaterSpell	20	2	altenhof	4	2	1
+f3fad0f2-a1af-45df-b80d-2e48825773d9	Ork	45	1	altenhof	4	1	5
+8c20639d-6400-4534-bd0f-ae563f11f57a	WaterSpell	25	2	altenhof	4	2	1
+b017ee50-1c14-44e2-bfd6-2c0c5653a37c	WaterGoblin	11	1	altenhof	3	2	2
+d04b736a-e874-4137-b191-638e0ff3b4e7	Dragon	70	1	altenhof	3	1	3
+88221cfe-1f84-41b9-8152-8e36c6a354de	WaterSpell	22	2	altenhof	3	2	1
+1d3f175b-c067-4359-989d-96562bfa382c	Ork	40	1	altenhof	3	1	5
+171f6076-4eb5-4a7d-b3f2-2d650cc3d237	RegularSpell	28	2	altenhof	3	1	1
+70962948-2bf7-44a9-9ded-8c68eeac7793	WaterGoblin	9	1	admin	8	2	2
+74635fae-8ad3-4295-9139-320ab89c2844	FireSpell	55	2	admin	8	3	1
+ce6bcaee-47e1-4011-a49e-5a4d7d4245f3	Knight	21	1	admin	8	1	6
+a6fde738-c65a-4b10-b400-6fef0fdb28ba	FireSpell	55	2	admin	8	3	1
+a1618f1e-4f4c-4e09-9647-87e16f1edd2d	FireElf	23	1	admin	8	3	8
+67f9048f-99b8-4ae4-b866-d8008d00c53d	WaterGoblin	10	1	altenhof	7	2	2
+aa9999a0-734c-49c6-8f4a-651864b14e62	RegularSpell	50	2	altenhof	7	1	1
+d6e9c720-9b5a-40c7-a6b2-bc34752e3463	Knight	20	1	altenhof	7	1	6
+02a9c76e-b17d-427f-9240-2dd49b0d3bfd	RegularSpell	45	2	altenhof	7	1	1
+2508bf5c-20d7-43b4-8c77-bc677decadef	FireElf	25	1	altenhof	7	3	8
+2272ba48-6662-404d-a9a1-41a9bed316d9	WaterGoblin	11	1	altenhof	9	2	2
+3871d45b-b630-4a0d-8bc6-a5fc56b6a043	Dragon	70	1	altenhof	9	1	3
+166c1fd5-4dcb-41a8-91cb-f45dcd57cef3	Knight	22	1	altenhof	9	1	6
+237dbaef-49e3-4c23-b64b-abf5c087b276	WaterSpell	40	2	altenhof	9	2	1
+27051a20-8580-43ff-a473-e986b52f297a	FireElf	28	1	altenhof	9	3	8
 \.
 
 
 --
 -- TOC entry 3014 (class 0 OID 16414)
--- Dependencies: 203
+-- Dependencies: 201
 -- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -173,36 +198,51 @@ COPY public.categories (cat_id, name) FROM stdin;
 
 --
 -- TOC entry 3016 (class 0 OID 16444)
--- Dependencies: 205
+-- Dependencies: 203
 -- Data for Name: elements; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.elements (element_id, name, effectiv) FROM stdin;
-1	normal	water
-2	water	fire
-3	fire	normal
+3	Fire	Normal
+1	Normal	Water
+2	Water	Fire
 \.
 
 
 --
--- TOC entry 3012 (class 0 OID 16398)
--- Dependencies: 201
+-- TOC entry 3017 (class 0 OID 16467)
+-- Dependencies: 204
+-- Data for Name: monstertypes; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.monstertypes (mt_id, name) FROM stdin;
+1	Spell
+2	Goblin
+3	Dragon
+4	Wizzard
+5	Ork
+6	Knight
+7	Kraken
+8	Elf
+\.
+
+
+--
+-- TOC entry 3018 (class 0 OID 16481)
+-- Dependencies: 205
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (user_id, username, password, coins, active) FROM stdin;
-11	altenhof	markus	20	f
-10	altenho	markus	20	t
-12	kienboec	daniel	20	t
-13	kienbo	daniel	20	f
-14	kienb	daniel	20	f
-15	kien	daniel	20	f
+COPY public.users (username, password, coins, active) FROM stdin;
+admin	istrator	20	t
+kienboec	daniel	0	t
+altenhof	markus	0	t
 \.
 
 
 --
--- TOC entry 3024 (class 0 OID 0)
--- Dependencies: 204
+-- TOC entry 3025 (class 0 OID 0)
+-- Dependencies: 202
 -- Name: elements_element_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -210,16 +250,7 @@ SELECT pg_catalog.setval('public.elements_element_id_seq', 1, false);
 
 
 --
--- TOC entry 3025 (class 0 OID 0)
--- Dependencies: 200
--- Name: user_data_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.user_data_user_id_seq', 15, true);
-
-
---
--- TOC entry 2871 (class 2606 OID 16427)
+-- TOC entry 2868 (class 2606 OID 16427)
 -- Name: cards cards_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -228,7 +259,7 @@ ALTER TABLE ONLY public.cards
 
 
 --
--- TOC entry 2873 (class 2606 OID 16421)
+-- TOC entry 2870 (class 2606 OID 16421)
 -- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -237,7 +268,7 @@ ALTER TABLE ONLY public.categories
 
 
 --
--- TOC entry 2875 (class 2606 OID 16451)
+-- TOC entry 2872 (class 2606 OID 16451)
 -- Name: elements elements_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -246,7 +277,7 @@ ALTER TABLE ONLY public.elements
 
 
 --
--- TOC entry 2877 (class 2606 OID 16449)
+-- TOC entry 2874 (class 2606 OID 16449)
 -- Name: elements elements_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -255,25 +286,25 @@ ALTER TABLE ONLY public.elements
 
 
 --
--- TOC entry 2867 (class 2606 OID 16403)
--- Name: users user_data_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- TOC entry 2876 (class 2606 OID 16471)
+-- Name: monstertypes monstertypes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.monstertypes
+    ADD CONSTRAINT monstertypes_pkey PRIMARY KEY (mt_id);
+
+
+--
+-- TOC entry 2878 (class 2606 OID 16485)
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.users
-    ADD CONSTRAINT user_data_pkey PRIMARY KEY (user_id);
+    ADD CONSTRAINT users_pkey PRIMARY KEY (username);
 
 
 --
--- TOC entry 2869 (class 2606 OID 16405)
--- Name: users user_data_username_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT user_data_username_key UNIQUE (username);
-
-
---
--- TOC entry 2878 (class 2606 OID 16432)
+-- TOC entry 2879 (class 2606 OID 16432)
 -- Name: cards categorie_relation; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -291,15 +322,24 @@ ALTER TABLE ONLY public.cards
 
 
 --
--- TOC entry 2879 (class 2606 OID 16437)
+-- TOC entry 2881 (class 2606 OID 16472)
+-- Name: cards monstertype_relation; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cards
+    ADD CONSTRAINT monstertype_relation FOREIGN KEY (mt_id) REFERENCES public.monstertypes(mt_id);
+
+
+--
+-- TOC entry 2882 (class 2606 OID 16486)
 -- Name: cards user_relation; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.cards
-    ADD CONSTRAINT user_relation FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+    ADD CONSTRAINT user_relation FOREIGN KEY (username) REFERENCES public.users(username);
 
 
--- Completed on 2021-01-04 19:42:12
+-- Completed on 2021-01-08 00:23:01
 
 --
 -- PostgreSQL database dump complete

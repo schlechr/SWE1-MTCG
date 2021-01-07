@@ -16,8 +16,11 @@ namespace MonsterTradingCardGame.Server
 
         public const string okCode = "201 Message created";
 
-        public const string notFoundCode = "404 Message not found";
-        public const string conflictCode = "409 Conflict";
+        public const string badRequestCode =    "400 Bad Request";
+        public const string unathorizedCode =   "401 Unauthorized";
+        public const string forbiddenCode =     "403 Forbidden";
+        public const string notFoundCode =      "404 Message not found";
+        public const string conflictCode =      "409 Conflict";
 
 
         private Response(string status, string version, string mime, byte[] data)
@@ -52,6 +55,11 @@ namespace MonsterTradingCardGame.Server
                     p.HandlePostUsersMessage();
                 else if (CheckTokens(verbTokens, 1, "sessions"))
                     p.HandlePostSessionsMessage();
+                else if (CheckTokens(verbTokens, 1, "packages"))
+                    p.HandlePostPackagesMessage();
+                else if (CheckTokens(verbTokens, 1, "transactions") &&
+                         CheckTokens(verbTokens, 2, "packages"))
+                    p.HandlePostTransactionsPackagesMessage();
 
                 if( p.RespCode != "")
                 {
@@ -63,9 +71,9 @@ namespace MonsterTradingCardGame.Server
             return new Response(strResponseCode, request.Version, "text/plain", StringToByteArray(strResponse));
         }
 
-        private static bool CheckTokens(string[] tokens, int length, string key)
+        public static bool CheckTokens(string[] tokens, int len, string key)
         {
-            if (tokens.Length == length && tokens[0] == key)
+            if (tokens.Length >= len && tokens[len-1] == key)
                 return true;
             return false;
         }

@@ -1,6 +1,6 @@
 ﻿namespace MonsterTradingCardGame.Card
 {
-    public class Monster : Card
+    public class Monster : CCard
     {
         
     }

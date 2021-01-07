@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonsterTradingCardGame.DB;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -14,6 +15,7 @@ namespace MonsterTradingCardGame.Server
         public static List<string> MESSAGES = new List<string>();
         public static List<string> USERS = new List<string>();
         private TcpListener listener;
+        //public Connector con = new Connector("Host=localhost;Username=swe;Password=1234;Database=mtcg;");
 
 
         public HTTPServer(int port)
