@@ -74,6 +74,12 @@ namespace MonsterTradingCardGame.Server
 
                 if (CheckTokens(verbTokens, 1, "cards"))
                     g.HandleGetCardsMessage();
+
+                if (g.RespCode != "")
+                {
+                    strResponseCode = g.RespCode;
+                    strResponse = g.Resp;
+                }
             }
 
             return new Response(strResponseCode, request.Version, "text/plain", StringToByteArray(strResponse));

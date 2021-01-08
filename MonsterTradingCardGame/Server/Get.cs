@@ -33,13 +33,14 @@ namespace MonsterTradingCardGame.Server
             }
 
             string str_cards = activeUser.PrintAcquiredCards(con);
-            if ( str_cards.Equals(null))
+            if ( str_cards.Equals(""))
             {
                 CreateResponse(Response.noContentCode, $"ERROR: {activeUser.Username} do not have any cards");
                 return;
             }
 
-            Console.WriteLine(str_cards);
+            CreateResponse(Response.createCode, str_cards);
+            //Console.WriteLine(str_cards);
         }
     }
 }
