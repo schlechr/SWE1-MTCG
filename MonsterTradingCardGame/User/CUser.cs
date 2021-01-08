@@ -78,6 +78,74 @@ namespace MonsterTradingCardGame.User
             return false;
         }
 
+        internal List<string> GetDeck(NpgsqlConnection con)
+        {
+            List<string> deck_cards = new List<string>();
+
+            string sql = $"SELECT * FROM decks WHERE username = \'{Username}\'";
+            using (var cmd = new NpgsqlCommand(sql, con))
+            using (NpgsqlDataReader rdr = cmd.ExecuteReader())
+            {
+                Console.WriteLine("QUERY: " + sql);
+                while (rdr.Read())
+                {
+                    deck_cards.Add(rdr.GetString(1));
+                    deck_cards.Add(rdr.GetString(2));
+                    deck_cards.Add(rdr.GetString(3));
+                    deck_cards.Add(rdr.GetString(4));
+                }
+            }
+
+            if (deck_cards.Count == 4)
+                return deck_cards;
+
+            sql = $"SELECT count(*) FROM cards WHERE username = \'{Username}\'";
+            using (var cmd = new NpgsqlCommand(sql, con))
+            using (NpgsqlDataReader rdr = cmd.ExecuteReader())
+            {
+                Console.WriteLine("QUERY: " + sql);
+                while (rdr.Read())
+                {
+                    if (rdr.GetInt32(0) < 4)
+                        return deck_cards;
+                }
+            }
+
+            sql = $"SELECT card_id FROM cards WHERE username = \'{Username}\'";
+            using (var cmd = new NpgsqlCommand(sql, con))
+            using (NpgsqlDataReader rdr = cmd.ExecuteReader())
+            {
+                Console.WriteLine("QUERY: " + sql);
+                while (rdr.Read())
+                {
+                    deck_cards.Add(rdr.GetString(0));
+                    if (deck_cards.Count == 4)
+                        break;
+                }
+            }
+
+            CreateNewDeck(con, deck_cards);
+
+            return deck_cards;
+        }
+
+        private void CreateNewDeck(NpgsqlConnection con, List<string> deck_cards)
+        {
+            try
+            {
+                string sql = "INSERT INTO decks(username, card1, card2, card3, card4) " +
+                    $"VALUES(\'{Username}\', \'{deck_cards[0]}\', \'{deck_cards[1]}\', \'{deck_cards[2]}\', \'{deck_cards[3]}\')";
+                using (var cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Prepare();
+
+                    Console.WriteLine("QUERY: " + sql);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch { Console.WriteLine("ERROR with executing the last query!"); }
+        }
+
         internal bool CheckCoinsForPurchase(NpgsqlConnection con)
         {
             string sql = $"SELECT coins FROM users WHERE username = \'{Username}\'";

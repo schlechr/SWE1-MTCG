@@ -10,7 +10,7 @@ namespace MonsterTradingCardGame.Server
     {
         public Get(string content, Dictionary<string, string> hv)
         {
-            setREST(Content, hv);
+            setREST(content, hv);
         }
 
         public void HandleGetCardsMessage()
@@ -41,6 +41,53 @@ namespace MonsterTradingCardGame.Server
 
             CreateResponse(Response.createCode, str_cards);
             //Console.WriteLine(str_cards);
+        }
+
+        internal void HandleGetDeckMessage(bool plain)
+        {
+            if (Authorization.Length < 2 || Authorization[2] != "mtcgToken\r")
+            {
+                CreateResponse(Response.forbiddenCode, "ERROR: User a MTCG user to continue!");
+                return;
+            }
+
+            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
+            var con = new NpgsqlConnection(cs);
+            con.Open();
+
+            CUser activeUser = new CUser(Authorization[1]);
+            if (!activeUser.CheckLoggedIn(con))
+            {
+                CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
+                return;
+            }
+
+            List<string> deck_cards = activeUser.GetDeck(con);
+            string res = "";
+
+            if (!plain)
+            {
+                res = $"1: \'{deck_cards[0]}\'\n2: \'{deck_cards[1]}\'\n3: \'{deck_cards[2]}\'\n4: \'{deck_cards[3]}\'";
+                CreateResponse(Response.okCode, res);
+                return;
+            }
+
+            string sql = "SELECT name, damage FROM cards WHERE card_id IN " +
+                $"(\'{deck_cards[0]}\', \'{deck_cards[1]}\', \'{deck_cards[2]}\', \'{deck_cards[3]}\')";
+            using (var cmd = new NpgsqlCommand(sql, con))
+            using (NpgsqlDataReader rdr = cmd.ExecuteReader())
+            {
+                int i = 1;
+                Console.WriteLine("QUERY: " + sql);
+                while (rdr.Read())
+                {
+                    res += $"{i}: {rdr.GetString(0)} -> Damage: {rdr.GetDouble(1)}\n";
+                    i++;
+                }
+                CreateResponse(Response.okCode, res);
+                return;
+            }
+
         }
     }
 }

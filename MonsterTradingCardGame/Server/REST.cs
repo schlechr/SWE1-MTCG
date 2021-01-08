@@ -74,6 +74,15 @@ namespace MonsterTradingCardGame.Server
             Console.WriteLine("OUTPUT: " + Resp);
         }
 
+        public void CreateFinalResponse(ref string code, ref string msg)
+        {
+            if (RespCode != "")
+            {
+                code = RespCode;
+                msg = Resp;
+            }
+        }
+
         protected bool CompareDbEntries(NpgsqlConnection con, string sql, string cmp)
         {
             using (var cmd = new NpgsqlCommand(sql, con))

@@ -38,7 +38,7 @@ namespace MonsterTradingCardGame.Server
             if (request == null)
                 return MakeBadRequest();
 
-            string[] verbTokens = request.Resource.Split("/");
+            string[] verbTokens = request.Resource.Split(new char[] { '/', '?', '&' });
             string strResponse = "ERROR: CRUD Resource not correct";
             string strResponseCode = notFoundCode;
 
@@ -62,11 +62,7 @@ namespace MonsterTradingCardGame.Server
                          CheckTokens(verbTokens, 2, "packages"))
                     p.HandlePostTransactionsPackagesMessage();
 
-                if( p.RespCode != "")
-                {
-                    strResponseCode = p.RespCode;
-                    strResponse = p.Resp;
-                }
+                p.CreateFinalResponse(ref strResponseCode, ref strResponse);
             }
             else if (request.Verb == "GET")
             {
@@ -74,12 +70,10 @@ namespace MonsterTradingCardGame.Server
 
                 if (CheckTokens(verbTokens, 1, "cards"))
                     g.HandleGetCardsMessage();
+                else if (CheckTokens(verbTokens, 1, "deck"))
+                    g.HandleGetDeckMessage(CheckTokens(verbTokens, 2, "format=plain"));
 
-                if (g.RespCode != "")
-                {
-                    strResponseCode = g.RespCode;
-                    strResponse = g.Resp;
-                }
+                g.CreateFinalResponse(ref strResponseCode, ref strResponse);
             }
 
             return new Response(strResponseCode, request.Version, "text/plain", StringToByteArray(strResponse));
