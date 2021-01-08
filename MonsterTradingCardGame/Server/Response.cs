@@ -14,13 +14,15 @@ namespace MonsterTradingCardGame.Server
         public string mime { get; }
         public byte[] data { get; }
 
-        public const string okCode = "201 Message created";
+        public const string okCode          = "200 OK";
+        public const string createCode      = "201 Message created";
+        public const string noContentCode   = "204 No Content";
 
-        public const string badRequestCode =    "400 Bad Request";
-        public const string unathorizedCode =   "401 Unauthorized";
-        public const string forbiddenCode =     "403 Forbidden";
-        public const string notFoundCode =      "404 Message not found";
-        public const string conflictCode =      "409 Conflict";
+        public const string badRequestCode  = "400 Bad Request";
+        public const string unathorizedCode = "401 Unauthorized";
+        public const string forbiddenCode   = "403 Forbidden";
+        public const string notFoundCode    = "404 Message not found";
+        public const string conflictCode    = "409 Conflict";
 
 
         private Response(string status, string version, string mime, byte[] data)
@@ -48,9 +50,8 @@ namespace MonsterTradingCardGame.Server
 
             if (request.Verb == "POST")
             {
-                //Console.WriteLine("POST: " + string.Join(" ", verbTokens));
-
                 Post p = new Post(request.Content, request.HeaderValues);
+
                 if (CheckTokens(verbTokens, 1, "users")) //verbTokens.Length == 1 && verbTokens[0] == "users"
                     p.HandlePostUsersMessage();
                 else if (CheckTokens(verbTokens, 1, "sessions"))
@@ -66,6 +67,13 @@ namespace MonsterTradingCardGame.Server
                     strResponseCode = p.RespCode;
                     strResponse = p.Resp;
                 }
+            }
+            else if (request.Verb == "GET")
+            {
+                Get g = new Get(request.Content, request.HeaderValues);
+
+                if (CheckTokens(verbTokens, 1, "cards"))
+                    g.HandleGetCardsMessage();
             }
 
             return new Response(strResponseCode, request.Version, "text/plain", StringToByteArray(strResponse));

@@ -45,6 +45,23 @@ namespace MonsterTradingCardGame.User
             }
         }
 
+        public string PrintAcquiredCards(NpgsqlConnection con)
+        {
+            string res = "";
+            string sql = $"SELECT name, damage FROM cards WHERE username = \'{Username}\'";
+
+            using (var cmd = new NpgsqlCommand(sql, con))
+            using (NpgsqlDataReader rdr = cmd.ExecuteReader())
+            {
+                Console.WriteLine("QUERY: " + sql);
+                while (rdr.Read())
+                {
+                    res += $"{rdr.GetString(0)} -> Damage: {rdr.GetDouble(1)}\n";
+                }
+            }
+            return res;
+        }
+
         public bool CheckLoggedIn(NpgsqlConnection con)
         {
             string sql = $"SELECT active FROM users WHERE username = \'{Username}\'";
