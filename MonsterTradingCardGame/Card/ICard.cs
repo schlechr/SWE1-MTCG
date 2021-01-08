@@ -4,7 +4,7 @@
     {
         string id { get; set; }
         string name { get; set; }
-        float damage { get; set; }
+        double damage { get; set; }
         int cat_id { get; set; }
         string username { get; set; }
         int package_id { get; set; }

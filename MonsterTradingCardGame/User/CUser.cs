@@ -169,7 +169,8 @@ namespace MonsterTradingCardGame.User
         {
             int tmp_package_id = 0;
 
-            string sql = "SELECT count(*), package_id FROM cards WHERE username = \'admin\' GROUP BY package_id";
+            //Because of curl testing script it needs to be sorted by package_id!!!!!
+            string sql = "SELECT count(*), package_id FROM cards WHERE username = \'admin\' GROUP BY package_id ORDER BY package_id";
             using (var cmd = new NpgsqlCommand(sql, con))
             using (NpgsqlDataReader rdr = cmd.ExecuteReader())
             {
@@ -177,7 +178,7 @@ namespace MonsterTradingCardGame.User
                 while (rdr.Read())
                 {
                     if (rdr.GetInt32(0) == 5)
-                        tmp_package_id = rdr.GetInt32(1);
+                        tmp_package_id = rdr.GetInt32(1); break;
                 }
             }
 

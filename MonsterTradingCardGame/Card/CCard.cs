@@ -8,24 +8,16 @@ namespace MonsterTradingCardGame.Card
     {
         public string id { get; set; }
         public string name { get; set; }
-        public float damage { get; set; }
+        public double damage { get; set; }
         public int cat_id { get; set; }
         public string username { get; set; }
         public int package_id { get; set; }
         public int element_id { get; set; }
         public int mt_id { get; set; }
 
-        public CCard()
-        {
-            this.name = "Test";
-        }
-
-        public CCard(string id, string name, float damage)
+        public CCard(string id)
         {
             this.id = id;
-            this.name = name;
-            this.damage = damage;
-            this.element_id = 1;
         }
 
         internal int GetNextPackageId(NpgsqlConnection con)
@@ -119,6 +111,29 @@ namespace MonsterTradingCardGame.Card
             } 
             catch { Console.WriteLine($"ERROR while executing {sql}"); }
                 
+        }
+
+        internal void CompleteCardInformation(NpgsqlConnection con)
+        {
+            //Only card_id available
+            string sql = $"SELECT name, damage, cat_id, username, package_id, element_id, mt_id FROM cards WHERE card_id = \'{id}\'";
+            using (var cmd = new NpgsqlCommand(sql, con))
+            using (NpgsqlDataReader rdr = cmd.ExecuteReader())
+            {
+                Console.WriteLine("QUERY: " + sql);
+                while (rdr.Read())
+                {
+                    name = rdr.GetString(0);
+                    damage = rdr.GetDouble(1);
+                    cat_id = rdr.GetInt32(2);
+                    username = rdr.GetString(3);
+                    package_id = rdr.GetInt32(4);
+                    element_id = rdr.GetInt32(5);
+                    mt_id = rdr.GetInt32(6);
+                }
+            }
+
+            return;
         }
     }
 }

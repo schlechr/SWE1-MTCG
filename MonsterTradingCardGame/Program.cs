@@ -1,6 +1,5 @@
 ﻿using System;
 using MonsterTradingCardGame.Card;
-using MonsterTradingCardGame.Player;
 using MonsterTradingCardGame.Server;
 
 namespace MonsterTradingCardGame

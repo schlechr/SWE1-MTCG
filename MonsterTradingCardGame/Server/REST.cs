@@ -67,6 +67,18 @@ namespace MonsterTradingCardGame.Server
             return tmp_res;
         }
 
+        protected List<string> ConvertJsonDeckContent()
+        {
+            List<string> tmp_res = new List<string>();
+
+            if (ContentType == "application/json\r")
+            {
+                tmp_res = JsonConvert.DeserializeObject<List<string>>(Content);
+            }
+
+            return tmp_res;
+        }
+
         protected void CreateResponse(string code, string msg)
         {
             RespCode = code;

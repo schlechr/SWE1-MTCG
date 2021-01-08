@@ -75,6 +75,15 @@ namespace MonsterTradingCardGame.Server
 
                 g.CreateFinalResponse(ref strResponseCode, ref strResponse);
             }
+            else if(request.Verb == "PUT")
+            {
+                Put pu = new Put(request.Content, request.HeaderValues);
+
+                if (CheckTokens(verbTokens, 1, "deck"))
+                    pu.HandlePutDeckMessage();
+
+                pu.CreateFinalResponse(ref strResponseCode, ref strResponse);
+            }
 
             return new Response(strResponseCode, request.Version, "text/plain", StringToByteArray(strResponse));
         }
