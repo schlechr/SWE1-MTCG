@@ -72,6 +72,8 @@ namespace MonsterTradingCardGame.Server
                     g.HandleGetCardsMessage();
                 else if (CheckTokens(verbTokens, 1, "deck"))
                     g.HandleGetDeckMessage(CheckTokens(verbTokens, 2, "format=plain"));
+                else if (CheckTokens(verbTokens, 1, "users"))
+                    g.HandleGetUsersMessage(verbTokens[1]);
 
                 g.CreateFinalResponse(ref strResponseCode, ref strResponse);
             }
@@ -81,6 +83,8 @@ namespace MonsterTradingCardGame.Server
 
                 if (CheckTokens(verbTokens, 1, "deck"))
                     pu.HandlePutDeckMessage();
+                else if (CheckTokens(verbTokens, 1, "users"))
+                    pu.HandlePutUsersMessage(verbTokens[1]);
 
                 pu.CreateFinalResponse(ref strResponseCode, ref strResponse);
             }

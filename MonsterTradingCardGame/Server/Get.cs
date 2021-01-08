@@ -89,5 +89,30 @@ namespace MonsterTradingCardGame.Server
             }
 
         }
+
+        internal void HandleGetUsersMessage(string user)
+        {
+            if (Authorization.Length < 2 || Authorization[2] != "mtcgToken\r" || Authorization[1] != user )
+            {
+                CreateResponse(Response.forbiddenCode, "ERROR: User a MTCG user to continue!");
+                if (Authorization[1] != user)
+                    CreateResponse(Response.unathorizedCode, $"ERROR: Only allowed to see data of User {Authorization[1]}");
+                return;
+            }
+
+            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
+            var con = new NpgsqlConnection(cs);
+            con.Open();
+
+            CUser activeUser = new CUser(Authorization[1]);
+            if (!activeUser.CheckLoggedIn(con))
+            {
+                CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
+                return;
+            }
+
+            CUserData cud = new CUserData(con, user);
+            CreateResponse(Response.okCode, cud.DataToString());
+        }
     }
 }
