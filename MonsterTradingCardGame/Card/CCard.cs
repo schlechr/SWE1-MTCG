@@ -73,7 +73,8 @@ namespace MonsterTradingCardGame.Card
                     Console.WriteLine("QUERY: " + sql);
                     while (rdr.Read())
                     {
-                        if (this.name.Contains(rdr.GetString(1)))
+                        if (this.name.Contains(rdr.GetString(1)) || 
+                            (this.name == "Dragon" && rdr.GetString(1) == "Fire") )
                         {
                             this.element_id = rdr.GetInt32(0);
                             break;

@@ -133,8 +133,8 @@ namespace MonsterTradingCardGame.User
         {
             try
             {
-                string sql = "INSERT INTO decks(username, card1, card2, card3, card4) " +
-                    $"VALUES(\'{Username}\', \'{deck_cards[0]}\', \'{deck_cards[1]}\', \'{deck_cards[2]}\', \'{deck_cards[3]}\')";
+                string sql = "INSERT INTO decks(username, card1, card2, card3, card4, fight_lock) " +
+                    $"VALUES(\'{Username}\', \'{deck_cards[0]}\', \'{deck_cards[1]}\', \'{deck_cards[2]}\', \'{deck_cards[3]}\', false)";
                 using (var cmd = new NpgsqlCommand(sql, con))
                 {
                     cmd.Prepare();

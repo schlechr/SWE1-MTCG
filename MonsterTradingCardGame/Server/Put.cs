@@ -34,7 +34,7 @@ namespace MonsterTradingCardGame.Server
             }
 
             CDeck newDeck = new CDeck(con, ConvertJsonDeckContent());
-            if( newDeck.cs.Count != 4 )
+            if( newDeck.cards.Count != 4 )
             {
                 CreateResponse(Response.conflictCode, $"ERROR: There must be 4 cards declared for the deck!");
                 return;

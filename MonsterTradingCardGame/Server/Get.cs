@@ -1,4 +1,5 @@
-﻿using MonsterTradingCardGame.User;
+﻿using MonsterTradingCardGame.Battle;
+using MonsterTradingCardGame.User;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -94,7 +95,7 @@ namespace MonsterTradingCardGame.Server
         {
             if (Authorization.Length < 2 || Authorization[2] != "mtcgToken\r" || Authorization[1] != user )
             {
-                CreateResponse(Response.forbiddenCode, "ERROR: User a MTCG user to continue!");
+                CreateResponse(Response.forbiddenCode, "ERROR: User must be a MTCG user to continue!");
                 if (Authorization[1] != user)
                     CreateResponse(Response.unathorizedCode, $"ERROR: Only allowed to see data of User {Authorization[1]}");
                 return;
@@ -113,6 +114,79 @@ namespace MonsterTradingCardGame.Server
 
             CUserData cud = new CUserData(con, user);
             CreateResponse(Response.okCode, cud.DataToString());
+        }
+
+        internal void HandleGetStatsMessage()
+        {
+            if (Authorization.Length < 2 || Authorization[2] != "mtcgToken\r")
+            {
+                CreateResponse(Response.forbiddenCode, "ERROR: User must be a MTCG user to continue!");
+                return;
+            }
+
+            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
+            var con = new NpgsqlConnection(cs);
+            con.Open();
+
+            CUser activeUser = new CUser(Authorization[1]);
+            if (!activeUser.CheckLoggedIn(con))
+            {
+                CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
+                return;
+            }
+
+            CUserStats stats = new CUserStats(activeUser.Username);
+            string res = stats.print();
+            CreateResponse(Response.okCode, res);
+        }
+
+        internal void HandleGetScoreMessage()
+        {
+            if (Authorization.Length < 2 || Authorization[2] != "mtcgToken\r")
+            {
+                CreateResponse(Response.forbiddenCode, "ERROR: User must be a MTCG user to continue!");
+                return;
+            }
+
+            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
+            var con = new NpgsqlConnection(cs);
+            con.Open();
+
+            CUser activeUser = new CUser(Authorization[1]);
+            if (!activeUser.CheckLoggedIn(con))
+            {
+                CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
+                return;
+            }
+
+            Scoreboard score = new Scoreboard(activeUser.Username);
+            string res = score.print();
+            CreateResponse(Response.okCode, res);
+        }
+
+        internal void HandleGetTradingsMessage()
+        {
+            if (Authorization.Length < 2 || Authorization[2] != "mtcgToken\r")
+            {
+                CreateResponse(Response.forbiddenCode, "ERROR: User must be a MTCG user to continue!");
+                return;
+            }
+
+            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
+            var con = new NpgsqlConnection(cs);
+            con.Open();
+
+            CUser activeUser = new CUser(Authorization[1]);
+            if (!activeUser.CheckLoggedIn(con))
+            {
+                CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
+                return;
+            }
+
+            while(true)
+            {
+
+            }
         }
     }
 }

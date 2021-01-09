@@ -1,4 +1,6 @@
-﻿using MonsterTradingCardGame.Card;
+﻿using MonsterTradingCardGame.Battle;
+using MonsterTradingCardGame.Card;
+using MonsterTradingCardGame.DB;
 using MonsterTradingCardGame.User;
 using Newtonsoft.Json;
 using Npgsql;
@@ -75,6 +77,59 @@ namespace MonsterTradingCardGame.Server
             }
 
             CreateResponse( Response.okCode, "Admin is logged in" );
+            return;
+        }
+
+        internal void HandlePostBattlesMessage()
+        {
+            if (Authorization.Length < 2 || Authorization[2] != "mtcgToken\r")
+            {
+                CreateResponse(Response.forbiddenCode, "ERROR: User a MTCG user to continue!");
+                return;
+            }
+
+            Connector con = new Connector();
+            //var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
+            //var con = new NpgsqlConnection(cs);
+            //con.Open();
+
+            CUser fightUser = new CUser(Authorization[1]);
+            if (!fightUser.CheckLoggedIn(con.con))
+            {
+                CreateResponse(Response.unathorizedCode, $"ERROR: {fightUser.Username} is not logged in");
+                return;
+            }
+
+            CBattle battle = new CBattle(fightUser.Username);
+            if (!battle.FindOpponent())
+            {
+                if(!battle.SetFighterAvailable())
+                {
+                    CreateResponse(Response.internalServerErrorCode, $"ERROR: Setting {fightUser.Username} to active was not working");
+                    return;
+                }
+                else
+                {
+                    CreateResponse(Response.okCode, $"{fightUser.Username} was registered as active fighter!");
+                    return;
+                }
+            }
+
+            if(!battle.PrepareFighters())
+            {
+                CreateResponse(Response.internalServerErrorCode, $"ERROR: Preparation of fighters is not working correctly!");
+                return;
+            }
+
+            if(!battle.PrepareEnvironment())
+            {
+                CreateResponse(Response.internalServerErrorCode, $"ERROR: Preparation of environment is not working correctly!");
+                return;
+            }
+
+            string log = battle.Start();
+            CreateResponse(Response.okCode, log);
+
             return;
         }
 

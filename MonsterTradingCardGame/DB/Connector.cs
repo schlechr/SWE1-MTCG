@@ -1,5 +1,6 @@
 ﻿using Npgsql;
 using System;
+using System.Collections.Generic;
 
 namespace MonsterTradingCardGame.DB
 {
@@ -7,13 +8,13 @@ namespace MonsterTradingCardGame.DB
     {
         public NpgsqlConnection con { get; set; }
 
-        public Connector( string con_string )
+        public Connector()
         {
-            con = new NpgsqlConnection( con_string );
+            con = new NpgsqlConnection("Host=localhost;Username=swe;Password=1234;Database=mtcg;");
             con.Open();
         }
 
-        public int UpdateDB(string sql)
+        public int Update(string sql)
         {
             using (var cmd = new NpgsqlCommand(sql, con))
             {
@@ -24,5 +25,107 @@ namespace MonsterTradingCardGame.DB
             }
         }
 
+        internal int SelectInt(string sql)
+        {
+            using (var cmd = new NpgsqlCommand(sql, con))
+            using (NpgsqlDataReader rdr = cmd.ExecuteReader())
+            {
+                Console.WriteLine("QUERY: " + sql);
+                while (rdr.Read())
+                {
+                    if (!rdr.IsDBNull(0))
+                        return rdr.GetInt32(0);
+                }
+            }
+            return 0;
+        }
+
+        internal List<int> SelectListInt(int count, string sql)
+        {
+            List<int> res = new List<int>();
+
+            using (var cmd = new NpgsqlCommand(sql, con))
+            using (NpgsqlDataReader rdr = cmd.ExecuteReader())
+            {
+                Console.WriteLine("QUERY: " + sql);
+                while (rdr.Read())
+                {
+                    for (int i = 0; i < count; i++)
+                        if (!rdr.IsDBNull(i))
+                            res.Add(rdr.GetInt32(i));
+                }
+            }
+
+            if (res.Count != count)
+                return null;
+            else
+                return res;
+        }
+
+        internal void Insert(string sql)
+        {
+            using (var cmd = new NpgsqlCommand(sql, con))
+            {
+                cmd.Prepare();
+
+                cmd.ExecuteNonQuery();
+                Console.WriteLine("QUERY: " + sql);
+                return;
+            }
+        }
+
+        internal List<string> SelectListString(int count, string sql)
+        {
+            List<string> res = new List<string>();
+
+            using (var cmd = new NpgsqlCommand(sql, con))
+            using (NpgsqlDataReader rdr = cmd.ExecuteReader())
+            {
+                Console.WriteLine("QUERY: " + sql);
+                while (rdr.Read())
+                {
+                    for (int i = 0; i < count; i++)
+                        if (!rdr.IsDBNull(i))
+                            res.Add(rdr.GetString(i));
+                }
+            }
+
+            if (res.Count != count)
+                return null;
+            else
+                return res;
+        }
+
+        public string SelectSingleString(string sql)
+        {
+            using (var cmd = new NpgsqlCommand(sql, con))
+            using (NpgsqlDataReader rdr = cmd.ExecuteReader())
+            {
+                Console.WriteLine("QUERY: " + sql);
+                while (rdr.Read())
+                {
+                    if (!rdr.IsDBNull(0))
+                        return rdr.GetString(0);
+                }
+            }
+            return "";
+        }
+
+        internal Dictionary<int, string> SelectDictIntString(string sql)
+        {
+            Dictionary<int, string> res = new Dictionary<int, string>();
+
+            using (var cmd = new NpgsqlCommand(sql, con))
+            using (NpgsqlDataReader rdr = cmd.ExecuteReader())
+            {
+                Console.WriteLine("QUERY: " + sql);
+                while (rdr.Read())
+                {
+                    res.Add(rdr.GetInt32(0), rdr.GetString(1));
+                }
+            }
+
+            return res;
+        }
     }
 }

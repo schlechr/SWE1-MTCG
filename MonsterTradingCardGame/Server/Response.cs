@@ -24,6 +24,8 @@ namespace MonsterTradingCardGame.Server
         public const string notFoundCode    = "404 Message not found";
         public const string conflictCode    = "409 Conflict";
 
+        public const string internalServerErrorCode = "500 Internal Server Error";
+
 
         private Response(string status, string version, string mime, byte[] data)
         {
@@ -61,6 +63,8 @@ namespace MonsterTradingCardGame.Server
                 else if (CheckTokens(verbTokens, 1, "transactions") &&
                          CheckTokens(verbTokens, 2, "packages"))
                     p.HandlePostTransactionsPackagesMessage();
+                else if (CheckTokens(verbTokens, 1, "battles"))
+                    p.HandlePostBattlesMessage();
 
                 p.CreateFinalResponse(ref strResponseCode, ref strResponse);
             }
@@ -74,6 +78,12 @@ namespace MonsterTradingCardGame.Server
                     g.HandleGetDeckMessage(CheckTokens(verbTokens, 2, "format=plain"));
                 else if (CheckTokens(verbTokens, 1, "users"))
                     g.HandleGetUsersMessage(verbTokens[1]);
+                else if (CheckTokens(verbTokens, 1, "stats"))
+                    g.HandleGetStatsMessage();
+                else if (CheckTokens(verbTokens, 1, "score"))
+                    g.HandleGetScoreMessage();
+                else if (CheckTokens(verbTokens, 1, "tradings"))
+                    g.HandleGetTradingsMessage();
 
                 g.CreateFinalResponse(ref strResponseCode, ref strResponse);
             }
