@@ -1,4 +1,5 @@
 ﻿using MonsterTradingCardGame.Battle;
+using MonsterTradingCardGame.Card;
 using MonsterTradingCardGame.User;
 using Npgsql;
 using System;
@@ -183,10 +184,18 @@ namespace MonsterTradingCardGame.Server
                 return;
             }
 
-            while(true)
-            {
+            CTradings tmp = new CTradings();
+            List<CTradings> all_trades = tmp.GetTradings();
 
+            string res = "";
+            foreach( CTradings x in all_trades )
+            {
+                res += x.Print();
             }
+            if (res == "")
+                res = "No Trades available at the moment\n";
+
+            CreateResponse(Response.okCode, res);
         }
     }
 }

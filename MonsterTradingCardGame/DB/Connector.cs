@@ -62,16 +62,19 @@ namespace MonsterTradingCardGame.DB
                 return res;
         }
 
-        internal void Insert(string sql)
+        internal bool Insert(string sql)
         {
-            using (var cmd = new NpgsqlCommand(sql, con))
+            try
             {
-                cmd.Prepare();
+                using (var cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Prepare();
 
-                cmd.ExecuteNonQuery();
-                Console.WriteLine("QUERY: " + sql);
-                return;
-            }
+                    cmd.ExecuteNonQuery();
+                    Console.WriteLine("QUERY: " + sql);
+                    return true;
+                }
+            } catch { return false; }
         }
 
         internal List<string> SelectListString(int count, string sql)

@@ -133,6 +133,33 @@ namespace MonsterTradingCardGame.Server
             return;
         }
 
+        internal void HandlePostTradingsMessage()
+        {
+            if (Authorization.Length < 2 || Authorization[2] != "mtcgToken\r")
+            {
+                CreateResponse(Response.forbiddenCode, "ERROR: User a MTCG user to continue!");
+                return;
+            }
+
+            Connector con = new Connector();
+
+            CUser activeUser = new CUser(Authorization[1]);
+            if (!activeUser.CheckLoggedIn(con.con))
+            {
+                CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
+                return;
+            }
+
+            CTradings newTrade = ConvertJsonTradingContent();
+
+            string res = "\n";
+            res += newTrade.Post(activeUser.Username);
+            res += newTrade.Print();
+
+            CreateResponse(Response.okCode, res);
+            return;
+        }
+
         public void HandlePostTransactionsPackagesMessage()
         {
             var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";

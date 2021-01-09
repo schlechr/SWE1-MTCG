@@ -91,6 +91,18 @@ namespace MonsterTradingCardGame.Server
             return tmp_res;
         }
 
+        protected CTradings ConvertJsonTradingContent()
+        {
+            CTradings tmp_res = new CTradings();
+
+            if (ContentType == "application/json\r")
+            {
+                tmp_res = JsonConvert.DeserializeObject<CTradings>(Content);
+            }
+
+            return tmp_res;
+        }
+
         protected void CreateResponse(string code, string msg)
         {
             RespCode = code;

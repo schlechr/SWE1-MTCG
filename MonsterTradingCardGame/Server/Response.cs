@@ -65,6 +65,8 @@ namespace MonsterTradingCardGame.Server
                     p.HandlePostTransactionsPackagesMessage();
                 else if (CheckTokens(verbTokens, 1, "battles"))
                     p.HandlePostBattlesMessage();
+                else if (CheckTokens(verbTokens, 1, "tradings"))
+                    p.HandlePostTradingsMessage();
 
                 p.CreateFinalResponse(ref strResponseCode, ref strResponse);
             }
