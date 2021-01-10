@@ -100,8 +100,10 @@ namespace MonsterTradingCardGame.Battle
             winner.FighterScore.Update();
             looser.FighterScore.Update();
 
-            //TODO
-            winner.GetCards(looser);
+            
+            winner.GetCards(con, looser);
+
+            con.Update($"UPDATE decks SET fight_lock = false WHERE username = \'{winner.Username}\'");
 
             return $"\nBattle is over! Congrats to {winner.Username}!!!\n";
         }

@@ -23,12 +23,10 @@ namespace MonsterTradingCardGame.Server
         {
             CUser newUser = ConvertJsonUserContent();
 
-            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
-            var con = new NpgsqlConnection(cs);
-            con.Open();
+            Connector con = new Connector();
 
             //If user already exists in DB exit methode
-            if (CompareDbEntries(con, "SELECT username FROM users", newUser.Username) )
+            if (CompareDbEntries(con.con, "SELECT username FROM users", newUser.Username) )
             {
                 RespCode = Response.conflictCode;
                 Resp = $"User {newUser.Username} already exists!";
@@ -36,7 +34,7 @@ namespace MonsterTradingCardGame.Server
                 return;
             }
             
-            newUser.AddToDb(con);
+            newUser.AddToDb(con.con);
 
             RespCode = Response.createCode;
             Resp = $"User {newUser.Username} successfully registered!";
@@ -51,12 +49,10 @@ namespace MonsterTradingCardGame.Server
                 return;
             }
 
-            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
-            var con = new NpgsqlConnection(cs);
-            con.Open();
+            Connector con = new Connector();
 
             CUser adminUser = new CUser(Authorization[1]);
-            if (!adminUser.CheckLoggedIn(con))
+            if (!adminUser.CheckLoggedIn(con.con))
             {
                 CreateResponse(Response.unathorizedCode, "ERROR: Admin is not logged in");
                 return;
@@ -69,11 +65,11 @@ namespace MonsterTradingCardGame.Server
                 return;
             }
 
-            int package_id = cards[0].GetNextPackageId( con );
+            int package_id = cards[0].GetNextPackageId( con.con );
             foreach( CCard tmp_card in cards )
             {
-                tmp_card.FinishCardDetails( con, package_id );
-                tmp_card.AddToDb(con);
+                tmp_card.FinishCardDetails( con.con, package_id );
+                tmp_card.AddToDb(con.con);
             }
 
             CreateResponse( Response.okCode, "Admin is logged in" );
@@ -89,9 +85,6 @@ namespace MonsterTradingCardGame.Server
             }
 
             Connector con = new Connector();
-            //var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
-            //var con = new NpgsqlConnection(cs);
-            //con.Open();
 
             CUser fightUser = new CUser(Authorization[1]);
             if (!fightUser.CheckLoggedIn(con.con))
@@ -160,26 +153,73 @@ namespace MonsterTradingCardGame.Server
             return;
         }
 
+        internal void HandlePostTradingsIdMessage(string trade_id)
+        {
+            if (Authorization.Length < 2 || Authorization[2] != "mtcgToken\r")
+            {
+                CreateResponse(Response.forbiddenCode, "ERROR: User a MTCG user to continue!");
+                return;
+            }
+
+            Connector con = new Connector();
+
+            CUser activeUser = new CUser(Authorization[1]);
+            if (!activeUser.CheckLoggedIn(con.con))
+            {
+                CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
+                return;
+            }
+
+            CTradings trade = new CTradings(trade_id);
+            CCard trade_card = new CCard(ConvertJsonStringContent());
+            trade_card.CompleteCardInformation(con.con);
+
+            string tradeOwner = trade.GetOwner();
+            if( tradeOwner == activeUser.Username )
+            {
+                CreateResponse(Response.forbiddenCode, "ERROR: You can not make your own trade");
+                return;
+            }
+
+            if( !trade_card.username.Equals(activeUser.Username))
+            {
+                CreateResponse(Response.forbiddenCode, "ERROR: You need to trade a card which belongs to you");
+                return;
+            }
+
+            if(trade_card.CheckInDeck(con))
+            {
+                CreateResponse(Response.forbiddenCode, "ERROR: You card is currently used in your deck");
+                return;
+            }
+
+            if(!trade.Trade(trade_card, tradeOwner))
+            {
+                CreateResponse(Response.forbiddenCode, "ERROR: Your card does not fit the requirements");
+                return;
+            }
+
+            CreateResponse(Response.okCode, "Trade completed!");
+        }
+
         public void HandlePostTransactionsPackagesMessage()
         {
-            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
-            var con = new NpgsqlConnection(cs);
-            con.Open();
+            Connector con = new Connector();
 
             CUser buyUser = new CUser(Authorization[1]);
-            if (!buyUser.CheckLoggedIn(con))
+            if (!buyUser.CheckLoggedIn(con.con))
             {
                 CreateResponse(Response.unathorizedCode, $"ERROR: {buyUser.Username} is not logged in");
                 return;
             }
 
-            if (!buyUser.CheckCoinsForPurchase(con))
+            if (!buyUser.CheckCoinsForPurchase(con.con))
             {
                 CreateResponse(Response.unathorizedCode, $"ERROR: {buyUser.Username} do not have enough coins");
                 return;
             }
 
-            if (!buyUser.PurchasePackage(con))
+            if (!buyUser.PurchasePackage(con.con))
             {
                 CreateResponse(Response.conflictCode, $"ERROR: No package available at the moment");
                 return;
@@ -192,12 +232,10 @@ namespace MonsterTradingCardGame.Server
         {
             CUser loginUser = ConvertJsonUserContent();
 
-            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
-            var con = new NpgsqlConnection(cs);
-            con.Open();
+            Connector con = new Connector();
 
             //If User is not found in DB check, exit methode
-            if (!CompareDbEntries(con, "SELECT username FROM users", loginUser.Username))
+            if (!CompareDbEntries(con.con, "SELECT username FROM users", loginUser.Username))
             {
                 RespCode = Response.conflictCode;
                 Resp = $"User {loginUser.Username} not found!";
@@ -205,7 +243,7 @@ namespace MonsterTradingCardGame.Server
                 return;
             }
 
-            if ( loginUser.setActive(con) == 1 )
+            if ( loginUser.setActive(con.con) == 1 )
             {
                 RespCode = Response.okCode;
                 Resp = $"User {loginUser.Username} logged in successfully!";

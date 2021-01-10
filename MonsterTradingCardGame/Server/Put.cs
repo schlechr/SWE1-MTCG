@@ -1,4 +1,5 @@
 ﻿using MonsterTradingCardGame.Card;
+using MonsterTradingCardGame.DB;
 using MonsterTradingCardGame.User;
 using Npgsql;
 using System;
@@ -22,18 +23,16 @@ namespace MonsterTradingCardGame.Server
                 return;
             }
 
-            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
-            var con = new NpgsqlConnection(cs);
-            con.Open();
+            Connector con = new Connector();
 
             CUser activeUser = new CUser(Authorization[1]);
-            if (!activeUser.CheckLoggedIn(con))
+            if (!activeUser.CheckLoggedIn(con.con))
             {
                 CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
                 return;
             }
 
-            CDeck newDeck = new CDeck(con, ConvertJsonDeckContent());
+            CDeck newDeck = new CDeck(con.con, ConvertJsonDeckContent());
             if( newDeck.cards.Count != 4 )
             {
                 CreateResponse(Response.conflictCode, $"ERROR: There must be 4 cards declared for the deck!");
@@ -46,7 +45,7 @@ namespace MonsterTradingCardGame.Server
                 return;
             }
 
-            if( !newDeck.SaveDeck(con) )
+            if( !newDeck.SaveDeck(con.con) )
             {
                 CreateResponse(Response.conflictCode, $"ERROR: Update or Insert of deck has not worked correctly!");
                 return;
@@ -66,19 +65,17 @@ namespace MonsterTradingCardGame.Server
                 return;
             }
 
-            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
-            var con = new NpgsqlConnection(cs);
-            con.Open();
+            Connector con = new Connector();
 
             CUser activeUser = new CUser(Authorization[1]);
-            if (!activeUser.CheckLoggedIn(con))
+            if (!activeUser.CheckLoggedIn(con.con))
             {
                 CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
                 return;
             }
 
             CUserData user_data = ConvertJsonUserDataContent();
-            user_data.UpdateUserData(con, user);
+            user_data.UpdateUserData(con.con, user);
 
             CreateResponse(Response.okCode, "User data successfully updated!");
         }

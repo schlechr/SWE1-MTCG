@@ -62,6 +62,18 @@ namespace MonsterTradingCardGame.DB
                 return res;
         }
 
+        internal void Delete(string sql)
+        {
+            using (var cmd = new NpgsqlCommand(sql, con))
+            {
+                cmd.Prepare();
+
+                cmd.ExecuteNonQuery();
+                Console.WriteLine("QUERY: " + sql);
+                return;
+            }
+        }
+
         internal bool Insert(string sql)
         {
             try
@@ -129,6 +141,12 @@ namespace MonsterTradingCardGame.DB
             }
 
             return res;
+        }
+
+        ~Connector()
+        {
+            //Console.WriteLine("Destructor called");
+            con.Close();
         }
     }
 }

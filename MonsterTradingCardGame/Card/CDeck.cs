@@ -57,6 +57,12 @@ namespace MonsterTradingCardGame.Card
             return true;
         }
 
+        internal void ChangeOwner(DB.Connector con, string newOwner)
+        {
+            foreach( CCard x in cards )
+                con.Update($"UPDATE cards SET username = \'{newOwner}\' WHERE card_id = \'{x.id}\'");
+        }
+
         private bool InsertNewDeck(NpgsqlConnection con)
         {
             string sql = $"INSERT INTO decks(username, card1, card2, card3, card4, fight_lock) " +

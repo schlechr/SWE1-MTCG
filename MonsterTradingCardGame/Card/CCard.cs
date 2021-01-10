@@ -1,5 +1,7 @@
-﻿using Npgsql;
+﻿using MonsterTradingCardGame.DB;
+using Npgsql;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace MonsterTradingCardGame.Card
@@ -135,6 +137,19 @@ namespace MonsterTradingCardGame.Card
             }
 
             return;
+        }
+
+        internal bool CheckInDeck(Connector con)
+        {
+            List<string> deckCards = new List<string>();
+
+            deckCards = con.SelectListString(4, $"SELECT card1, card2, card3, card4 FROM decks WHERE username = \'{username}\'");
+            foreach( string card in deckCards)
+            {
+                if (card.Equals(id))
+                    return true;
+            }
+            return false;
         }
     }
 }

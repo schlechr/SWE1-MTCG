@@ -1,5 +1,6 @@
 ﻿using MonsterTradingCardGame.Battle;
 using MonsterTradingCardGame.Card;
+using MonsterTradingCardGame.DB;
 using MonsterTradingCardGame.User;
 using Npgsql;
 using System;
@@ -23,18 +24,16 @@ namespace MonsterTradingCardGame.Server
                 return;
             }
 
-            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
-            var con = new NpgsqlConnection(cs);
-            con.Open();
+            Connector con = new Connector();
 
             CUser activeUser = new CUser(Authorization[1]);
-            if (!activeUser.CheckLoggedIn(con))
+            if (!activeUser.CheckLoggedIn(con.con))
             {
                 CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
                 return;
             }
 
-            string str_cards = activeUser.PrintAcquiredCards(con);
+            string str_cards = activeUser.PrintAcquiredCards(con.con);
             if ( str_cards.Equals(""))
             {
                 CreateResponse(Response.noContentCode, $"ERROR: {activeUser.Username} do not have any cards");
@@ -42,7 +41,6 @@ namespace MonsterTradingCardGame.Server
             }
 
             CreateResponse(Response.createCode, str_cards);
-            //Console.WriteLine(str_cards);
         }
 
         internal void HandleGetDeckMessage(bool plain)
@@ -53,18 +51,16 @@ namespace MonsterTradingCardGame.Server
                 return;
             }
 
-            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
-            var con = new NpgsqlConnection(cs);
-            con.Open();
+            Connector con = new Connector();
 
             CUser activeUser = new CUser(Authorization[1]);
-            if (!activeUser.CheckLoggedIn(con))
+            if (!activeUser.CheckLoggedIn(con.con))
             {
                 CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
                 return;
             }
 
-            List<string> deck_cards = activeUser.GetDeck(con);
+            List<string> deck_cards = activeUser.GetDeck(con.con);
             string res = "";
 
             if (!plain)
@@ -76,7 +72,7 @@ namespace MonsterTradingCardGame.Server
 
             string sql = "SELECT name, damage FROM cards WHERE card_id IN " +
                 $"(\'{deck_cards[0]}\', \'{deck_cards[1]}\', \'{deck_cards[2]}\', \'{deck_cards[3]}\')";
-            using (var cmd = new NpgsqlCommand(sql, con))
+            using (var cmd = new NpgsqlCommand(sql, con.con))
             using (NpgsqlDataReader rdr = cmd.ExecuteReader())
             {
                 int i = 1;
@@ -102,18 +98,16 @@ namespace MonsterTradingCardGame.Server
                 return;
             }
 
-            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
-            var con = new NpgsqlConnection(cs);
-            con.Open();
+            Connector con = new Connector();
 
             CUser activeUser = new CUser(Authorization[1]);
-            if (!activeUser.CheckLoggedIn(con))
+            if (!activeUser.CheckLoggedIn(con.con))
             {
                 CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
                 return;
             }
 
-            CUserData cud = new CUserData(con, user);
+            CUserData cud = new CUserData(con.con, user);
             CreateResponse(Response.okCode, cud.DataToString());
         }
 
@@ -125,12 +119,10 @@ namespace MonsterTradingCardGame.Server
                 return;
             }
 
-            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
-            var con = new NpgsqlConnection(cs);
-            con.Open();
+            Connector con = new Connector();
 
             CUser activeUser = new CUser(Authorization[1]);
-            if (!activeUser.CheckLoggedIn(con))
+            if (!activeUser.CheckLoggedIn(con.con))
             {
                 CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
                 return;
@@ -149,12 +141,10 @@ namespace MonsterTradingCardGame.Server
                 return;
             }
 
-            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
-            var con = new NpgsqlConnection(cs);
-            con.Open();
+            Connector con = new Connector();
 
             CUser activeUser = new CUser(Authorization[1]);
-            if (!activeUser.CheckLoggedIn(con))
+            if (!activeUser.CheckLoggedIn(con.con))
             {
                 CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
                 return;
@@ -173,12 +163,10 @@ namespace MonsterTradingCardGame.Server
                 return;
             }
 
-            var cs = "Host=localhost;Username=swe;Password=1234;Database=mtcg;";
-            var con = new NpgsqlConnection(cs);
-            con.Open();
+            Connector con = new Connector();
 
             CUser activeUser = new CUser(Authorization[1]);
-            if (!activeUser.CheckLoggedIn(con))
+            if (!activeUser.CheckLoggedIn(con.con))
             {
                 CreateResponse(Response.unathorizedCode, $"ERROR: {activeUser.Username} is not logged in");
                 return;

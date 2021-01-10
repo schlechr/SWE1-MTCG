@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Sockets;
 using Npgsql;
 using MonsterTradingCardGame.User;
+using MonsterTradingCardGame.DB;
 
 namespace MonsterTradingCardGame.Server
 {
@@ -65,8 +66,12 @@ namespace MonsterTradingCardGame.Server
                     p.HandlePostTransactionsPackagesMessage();
                 else if (CheckTokens(verbTokens, 1, "battles"))
                     p.HandlePostBattlesMessage();
-                else if (CheckTokens(verbTokens, 1, "tradings"))
+                else if (CheckTokens(verbTokens, 1, "tradings") &&
+                         verbTokens.Length == 1)
                     p.HandlePostTradingsMessage();
+                else if (CheckTokens(verbTokens, 1, "tradings") &&
+                         verbTokens.Length == 2)
+                    p.HandlePostTradingsIdMessage(verbTokens[1]);
 
                 p.CreateFinalResponse(ref strResponseCode, ref strResponse);
             }
@@ -88,6 +93,7 @@ namespace MonsterTradingCardGame.Server
                     g.HandleGetTradingsMessage();
 
                 g.CreateFinalResponse(ref strResponseCode, ref strResponse);
+                
             }
             else if(request.Verb == "PUT")
             {
@@ -100,6 +106,18 @@ namespace MonsterTradingCardGame.Server
 
                 pu.CreateFinalResponse(ref strResponseCode, ref strResponse);
             }
+            else if(request.Verb == "DELETE")
+            {
+                Delete del = new Delete(request.Content, request.HeaderValues);
+
+                if (CheckTokens(verbTokens, 1, "tradings"))
+                    del.HandleDeleteTradingsMessage(verbTokens[1]);
+
+                del.CreateFinalResponse(ref strResponseCode, ref strResponse);
+            }
+
+            GC.Collect();
+            Console.WriteLine($"Memory after request handled: {GC.GetTotalMemory(false)}");
 
             return new Response(strResponseCode, request.Version, "text/plain", StringToByteArray(strResponse));
         }

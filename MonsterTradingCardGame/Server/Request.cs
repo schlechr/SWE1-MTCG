@@ -11,8 +11,6 @@ namespace MonsterTradingCardGame.Server
         public Dictionary<string,string> HeaderValues { get; set; }
         public string Content { get; set; }
 
-
-
         private Request(string verb, string res, string version, Dictionary<string,string> headervalues, string content)
         {
             Verb = verb;

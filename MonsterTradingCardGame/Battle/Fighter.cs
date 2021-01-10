@@ -21,7 +21,7 @@ namespace MonsterTradingCardGame.Battle
         internal bool Prepare(Connector con)
         {
             List<string> cards = con.SelectListString(4, $"SELECT card1, card2, card3, card4 FROM decks WHERE username = \'{Username}\'");
-            if (cards == null)
+            if (cards.Count != 4)
                 return false;
 
             Deck = new CDeck(con.con, cards);
@@ -34,9 +34,15 @@ namespace MonsterTradingCardGame.Battle
             return random.Next(Deck.cards.Count);
         }
 
-        internal void GetCards(Fighter looser) //TODO
+        internal void GetCards(Connector con, Fighter looser) //TODO
         {
-            throw new NotImplementedException();
+            looser.Deck.ChangeOwner(con, this.Username);
+            looser.DeleteDeck(con);
+        }
+
+        private void DeleteDeck(Connector con)
+        {
+            con.Delete($"DELETE FROM decks WHERE username = \'{Username}\'");
         }
     }
 }
