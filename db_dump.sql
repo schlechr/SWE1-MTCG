@@ -5,7 +5,7 @@
 -- Dumped from database version 13.1
 -- Dumped by pg_dump version 13.1
 
--- Started on 2021-01-09 16:17:55
+-- Started on 2021-01-10 15:20:02
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -146,8 +146,8 @@ ALTER TABLE public.scoreboard OWNER TO postgres;
 CREATE TABLE public.trades (
     trade_id character varying(50) NOT NULL,
     card_to_trade character varying(50) NOT NULL,
-    req_cat_id integer NOT NULL,
-    reg_min_dmg integer NOT NULL
+    req_type character varying(50) NOT NULL,
+    req_min_dmg integer NOT NULL
 );
 
 
@@ -189,13 +189,12 @@ COPY public.cards (card_id, name, damage, cat_id, username, package_id, element_
 845f0dc7-37d0-426e-994e-43fc3ac83c08	WaterGoblin	10	1	kienboec	1	2	2
 99f8f8dc-e25e-4a95-aa2c-782823f36e2a	Dragon	50	1	kienboec	1	3	3
 e85e3976-7c86-4d06-9a80-641c2019a79f	WaterSpell	20	2	kienboec	1	2	1
-1cb6ab86-bdb2-47e5-b6e4-68c5ab389334	Ork	45	1	kienboec	1	1	5
 dfdd758f-649c-40f9-ba3a-8657f4b3439f	FireSpell	25	2	kienboec	1	3	1
-4ec8b269-0dfa-4f97-809a-2c63fe2a0025	Ork	55	1	kienboec	2	1	5
-f8043c23-1534-4487-b66b-238e0c3c39b5	WaterSpell	23	2	kienboec	2	2	1
 644808c2-f87a-4600-b313-122b02322fd5	WaterGoblin	9	1	kienboec	2	2	2
 4a2757d6-b1c3-47ac-b9a3-91deab093531	Dragon	55	1	kienboec	2	3	3
 91a6471b-1426-43f6-ad65-6fc473e16f9f	WaterSpell	21	2	kienboec	2	2	1
+4ec8b269-0dfa-4f97-809a-2c63fe2a0025	Ork	55	1	kienboec	2	1	5
+f8043c23-1534-4487-b66b-238e0c3c39b5	WaterSpell	23	2	kienboec	2	2	1
 b017ee50-1c14-44e2-bfd6-2c0c5653a37c	WaterGoblin	11	1	kienboec	3	2	2
 d04b736a-e874-4137-b191-638e0ff3b4e7	Dragon	70	1	kienboec	3	3	3
 88221cfe-1f84-41b9-8152-8e36c6a354de	WaterSpell	22	2	kienboec	3	2	1
@@ -209,7 +208,6 @@ f3fad0f2-a1af-45df-b80d-2e48825773d9	Ork	45	1	kienboec	4	1	5
 d7d0cb94-2cbf-4f97-8ccf-9933dc5354b8	WaterGoblin	9	1	altenhof	5	2	2
 44c82fbc-ef6d-44ab-8c7a-9fb19a0e7c6e	Dragon	55	1	altenhof	5	3	3
 2c98cd06-518b-464c-b911-8d787216cddd	WaterSpell	21	2	altenhof	5	2	1
-951e886a-0fbf-425d-8df5-af2ee4830d85	Ork	55	1	altenhof	5	1	5
 dcd93250-25a7-4dca-85da-cad2789f7198	FireSpell	23	2	altenhof	5	3	1
 b2237eca-0271-43bd-87f6-b22f70d42ca4	WaterGoblin	11	1	altenhof	6	2	2
 9e8238a4-8a7a-487f-9f7d-a8c97899eb48	Dragon	70	1	altenhof	6	3	3
@@ -231,6 +229,8 @@ d6e9c720-9b5a-40c7-a6b2-bc34752e3463	Knight	20	1	altenhof	7	1	6
 ce6bcaee-47e1-4011-a49e-5a4d7d4245f3	Knight	21	1	altenhof	8	1	6
 a6fde738-c65a-4b10-b400-6fef0fdb28ba	FireSpell	55	2	altenhof	8	3	1
 a1618f1e-4f4c-4e09-9647-87e16f1edd2d	FireElf	23	1	altenhof	8	3	8
+1cb6ab86-bdb2-47e5-b6e4-68c5ab389334	Ork	45	1	altenhof	1	1	5
+951e886a-0fbf-425d-8df5-af2ee4830d85	Ork	55	1	kienboec	5	1	5
 \.
 
 
@@ -254,7 +254,6 @@ COPY public.categories (cat_id, name) FROM stdin;
 
 COPY public.decks (username, card1, card2, card3, card4, fight_lock) FROM stdin;
 altenhof	aa9999a0-734c-49c6-8f4a-651864b14e62	d6e9c720-9b5a-40c7-a6b2-bc34752e3463	d60e23cf-2238-4d49-844f-c7589ee5342e	02a9c76e-b17d-427f-9240-2dd49b0d3bfd	f
-kienboec	845f0dc7-37d0-426e-994e-43fc3ac83c08	99f8f8dc-e25e-4a95-aa2c-782823f36e2a	e85e3976-7c86-4d06-9a80-641c2019a79f	171f6076-4eb5-4a7d-b3f2-2d650cc3d237	t
 \.
 
 
@@ -296,8 +295,9 @@ COPY public.monstertypes (mt_id, name) FROM stdin;
 --
 
 COPY public.scoreboard (username, wins, draws, loses) FROM stdin;
-kienboec	3	0	4
-altenhof	4	0	3
+	0	0	0
+altenhof	10	0	5
+kienboec	5	0	10
 \.
 
 
@@ -307,7 +307,7 @@ altenhof	4	0	3
 -- Data for Name: trades; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.trades (trade_id, card_to_trade, req_cat_id, reg_min_dmg) FROM stdin;
+COPY public.trades (trade_id, card_to_trade, req_type, req_min_dmg) FROM stdin;
 \.
 
 
@@ -495,7 +495,7 @@ ALTER TABLE ONLY public.cards
     ADD CONSTRAINT user_relation FOREIGN KEY (username) REFERENCES public.users(username);
 
 
--- Completed on 2021-01-09 16:17:56
+-- Completed on 2021-01-10 15:20:03
 
 --
 -- PostgreSQL database dump complete
